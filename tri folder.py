@@ -56,6 +56,3 @@ print("Les choses suivantes ne sont pas triées : \n")
 print('\n'.join(notSorted))
 
 sys.exit(0)
-
-# avoir la taille
-#info = os.stat(ent)
