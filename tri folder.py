@@ -8,12 +8,12 @@ import sys
 import re
 
 dicTri={\
-    "IMAGES":"jpg|jpeg|bpm|png",\
-    "VIDEOS":"avi|mkv|mp4",\
-    "EXEC":"exe|sh|ksh|msi",\
-    "DOCUMENTS":"docx|xlsx|pptx|doc|xls|ppt|pdf",\
-    "TEXTE":"txt",\
-    "DIVERS":"iso|cue|zip|rar|7z"
+    "IMAGES":"jpg|jpeg|bpm|png",
+    "VIDEOS":"avi|mkv|mp4",
+    "EXEC":"exe|sh|ksh|msi",
+    "DOCUMENTS":"docx|xlsx|pptx|doc|xls|ppt|pdf",
+    "TEXTE":"txt",
+    "DIVERS":"iso|cue|zip|rar|7z|gz"
     }
 
 download = os.path.join(os.environ['HOME'],'Downloads')
@@ -43,8 +43,9 @@ with os.scandir(download) as it:
         if not ent.name.startswith('.') \
            and not ent.name.endswith('ini')\
            and ent.is_file():
+                name_,ext_=os.path.splitext(ent.name)
                 for folder,extens in dicTri.items():
-                    if re.search(extens, ent.name, re.IGNORECASE):
+                    if re.search(extens, ext_, re.IGNORECASE):
                         os.replace(ent.path, os.path.join(tri,folder,ent.name))
         elif not ent.name.startswith('.') and ent.is_dir():
             notSorted.append("DOSSIER : "+ent.name)
