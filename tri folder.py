@@ -8,7 +8,7 @@ import sys
 import re
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename="_TRI.txt", level=logging.INFO)
 
 def folderCreation(name):
     try:
