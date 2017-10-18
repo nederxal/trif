@@ -6,53 +6,55 @@
 import os
 import sys
 import re
+import logging
 
-dicTri={\
-    "IMAGES":"jpg|jpeg|bpm|png",
+logging.basicConfig(level=logging.INFO)
+
+def folderCreation(name):
+    try:
+        os.mkdir(name)
+        logging.info("Création du dossier %s", name)
+    except FileExistsError as e:
+        if e.errno != 17:
+            logging.critical(e)
+            raise
+
+def main():
+    dicTri={
+    "IMAGES":"jpg|jpeg|bmp|png",
     "VIDEOS":"avi|mkv|mp4",
-    "EXEC":"exe|sh|ksh|msi",
+    "EXEC":"exe|sh|msi",
     "DOCUMENTS":"docx|xlsx|pptx|doc|xls|ppt|pdf",
     "TEXTE":"txt",
     "DIVERS":"iso|cue|zip|rar|7z|gz"
     }
+    download = os.path.join(os.environ['HOME'],'Downloads')
+    tri = os.path.join(os.environ['HOME'],'A_TRIER')
+    notSorted = []
+    
+    folderCreation(tri)
 
-download = os.path.join(os.environ['HOME'],'Downloads')
-tri = os.path.join(os.environ['HOME'],'A_TRIER')
+    for rep in dicTri.keys():
+        folderCreation(os.path.join(tri,rep))
 
-notSorted = []
+    with os.scandir(download) as it:
+        for ent in it:
+            if not ent.name.startswith('.') \
+               and not ent.name.endswith('ini')\
+               and ent.is_file():
+                    name_,ext_=os.path.splitext(ent.name)
+                    for folder,extens in dicTri.items():
+                        if re.search(extens, ext_, re.IGNORECASE):
+                            os.replace(ent.path, os.path.join(tri,folder,ent.name))
+                            logging.info("%s a été déplacé dans %s", ent.name, folder)
+            elif not ent.name.startswith('.') and ent.is_dir():
+                notSorted.append("DOSSIER : "+ent.name)
+            else:
+                notSorted.append(ent.name)
 
-if not os.path.isdir(tri):
-    try:
-        os.mkdir(os.path.join(os.environ['HOME'],'A_TRIER'))
-    except FileExistsError as e:
-            if e.errno != 17:
-                print(e)
-                raise
+    logging.info("Les choses suivantes ne sont pas triées : ")
+    logging.info('\r'.join(notSorted))
 
-for rep in dicTri.keys():
-    if not os.path.isdir(tri+rep):
-        try:
-            os.mkdir(os.path.join(tri,rep))
-        except FileExistsError as e:
-            if e.errno != 17:
-                print(e)
-                raise
-
-with os.scandir(download) as it:
-    for ent in it:
-        if not ent.name.startswith('.') \
-           and not ent.name.endswith('ini')\
-           and ent.is_file():
-                name_,ext_=os.path.splitext(ent.name)
-                for folder,extens in dicTri.items():
-                    if re.search(extens, ext_, re.IGNORECASE):
-                        os.replace(ent.path, os.path.join(tri,folder,ent.name))
-        elif not ent.name.startswith('.') and ent.is_dir():
-            notSorted.append("DOSSIER : "+ent.name)
-        else:
-            notSorted.append(ent.name)
-
-print("Les choses suivantes ne sont pas triées : \n")
-print('\n'.join(notSorted))
-
-sys.exit(0)
+if __name__ == '__main__':
+    main()
+    sys.exit(0)
