@@ -16,7 +16,7 @@ def folderCreation(name):
         logging.info("Création du dossier %s", name)
     except FileExistsError as e:
         if e.errno != 17:
-            logging.critical(e)
+            logging.exception(e)
             raise
 
 def main():
