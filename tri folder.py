@@ -5,7 +5,6 @@
 
 import os
 import sys
-import re
 import logging
 
 logging.basicConfig(filename="_TRI.txt", level=logging.INFO)
@@ -21,12 +20,12 @@ def folderCreation(name):
 
 def main():
     dicTri={
-    "IMAGES":"jpg|jpeg|bmp|png",
-    "VIDEOS":"avi|mkv|mp4",
-    "EXEC":"exe|sh|msi",
-    "DOCUMENTS":"docx|xlsx|pptx|doc|xls|ppt|pdf",
-    "TEXTE":"txt",
-    "DIVERS":"iso|cue|zip|rar|7z|gz"
+    "IMAGES":[".jpg", ".jpeg", ".bpm", ".png"],
+    "VIDEOS":[".avi", ".mkv", "mp4"],
+    "EXEC":[".exe", ".sh", ".msi"],
+    "DOCUMENTS":[".docx", ".xlsx", ".pptx", ".doc", ".xls", ".ppt", ".pdf"],
+    "TEXTE":[".txt"],
+    "DIVERS":[".iso", ".cue", ".zip", ".rar", ".7z", ".gz"]
     }
     download = os.path.join(os.environ['HOME'],'Downloads')
     tri = os.path.join(os.environ['HOME'],'A_TRIER')
@@ -40,11 +39,10 @@ def main():
     with os.scandir(download) as it:
         for ent in it:
             if not ent.name.startswith('.') \
-               and not ent.name.endswith('ini')\
                and ent.is_file():
                     name_,ext_=os.path.splitext(ent.name)
                     for folder,extens in dicTri.items():
-                        if re.search(extens, ext_, re.IGNORECASE):
+                        if ext_ in extens:
                             os.replace(ent.path, os.path.join(tri,folder,ent.name))
                             logging.info("%s a été déplacé dans %s", ent.name, folder)
             elif not ent.name.startswith('.') and ent.is_dir():
