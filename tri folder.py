@@ -23,12 +23,12 @@ def main():
     "IMAGES":[".jpg", ".jpeg", ".bpm", ".png"],
     "VIDEOS":[".avi", ".mkv", "mp4"],
     "EXEC":[".exe", ".sh", ".msi"],
-    "DOCUMENTS":[".docx", ".xlsx", ".pptx", ".doc", ".xls", ".ppt", ".pdf"],
+    "DOCUMENTS":[".docx", ".xlsx", ".pptx", ".doc", ".xls", ".ppt", ".pdf", ".PDF"],
     "TEXTE":[".txt"],
     "DIVERS":[".iso", ".cue", ".zip", ".rar", ".7z", ".gz"]
     }
-    download = os.path.join(os.environ['HOME'],'Downloads')
-    tri = os.path.join(os.environ['HOME'],'A_TRIER')
+    download = os.path.join(os.environ['HOMEPATH'],'Downloads')
+    tri = os.path.join(os.environ['HOMEPATH'],'A_TRIER')
     notSorted = []
     
     folderCreation(tri)
@@ -43,8 +43,14 @@ def main():
                     name_,ext_=os.path.splitext(ent.name)
                     for folder,extens in dicTri.items():
                         if ext_ in extens:
-                            os.replace(ent.path, os.path.join(tri,folder,ent.name))
-                            logging.info("%s a été déplacé dans %s", ent.name, folder)
+                            try:
+                                os.replace(ent.path,
+                                            os.path.join(tri,folder,ent.name))
+                                logging.info("%s a été déplacé dans %s", 
+                                            ent.name, 
+                                            folder)
+                            except PermissionError as e:
+                                logging.error("Impossible de bouger %s, erreur %s", ent.name, e)
             elif not ent.name.startswith('.') and ent.is_dir():
                 notSorted.append("DOSSIER : "+ent.name)
             else:
